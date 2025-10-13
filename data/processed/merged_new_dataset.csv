@@ -1,0 +1,21 @@
+patient_id,age,gender,lifestyle_factors,diagnosis_x,delta_power,theta_power,alpha_power,beta_power,gamma_power,diagnosis_y,mean_intensity,variance,edge_count,cnn_feature1,cnn_feature2,diagnosis,doctor_diagnosis,ai_prediction,confidence_score,treatment_given,recovery_status,follow_up_duration_months
+1,20,F,Healthy,Stroke,0.437,0.651,0.21,0.45,0.877,Alzheimer,94.35,15.99,829,0.798,0.229,Tumor,Epilepsy,Epilepsy,0.85,Medication,Improved,5
+2,34,M,Non-Smoker,Stroke,0.956,0.226,0.546,0.344,0.661,Alzheimer,65.82,12.57,771,0.151,0.175,Stroke,Epilepsy,Stroke,0.88,Medication,Worsened,23
+3,50,F,Smoker,Normal,0.759,0.363,0.131,0.846,0.398,Normal,118.48,14.84,809,0.508,0.982,Tumor,Alzheimer,Epilepsy,0.98,,Recovered,10
+4,65,M,Non-Smoker,Alzheimer,0.639,0.43,0.918,0.421,0.157,Normal,82.77,30.11,515,0.696,0.517,Normal,Epilepsy,Epilepsy,0.8,Medication,No Change,22
+5,29,F,Smoker,Epilepsy,0.24,0.51,0.333,0.353,0.38,Epilepsy,112.48,23.17,346,0.858,0.261,Stroke,Normal,Normal,0.73,Therapy,Recovered,5
+6,76,M,Non-Smoker,Normal,0.24,0.807,0.696,0.588,0.393,Normal,182.49,7.92,935,0.326,0.996,Normal,Stroke,Tumor,0.91,,Improved,4
+7,68,F,Alcohol,Epilepsy,0.152,0.28,0.381,0.227,0.757,Alzheimer,98.65,16.43,538,0.22,0.965,Normal,Tumor,Epilepsy,0.71,Therapy,Improved,2
+8,39,M,Healthy,Epilepsy,0.88,0.563,0.568,0.822,0.674,Alzheimer,68.31,16.11,302,0.711,0.558,Tumor,Epilepsy,Alzheimer,0.77,Medication,Improved,20
+9,72,M,Smoker,Alzheimer,0.641,0.633,0.592,0.167,0.898,Normal,103.44,36.33,283,0.81,0.883,Tumor,Normal,Tumor,0.63,Surgery,Worsened,10
+10,39,F,Smoker,Epilepsy,0.737,0.142,0.266,0.988,0.525,Alzheimer,186.02,37.05,222,0.349,0.189,Tumor,Tumor,Stroke,0.61,Medication,Recovered,19
+11,63,M,Healthy,Epilepsy,0.119,0.647,0.973,0.795,0.208,Alzheimer,90.82,11.66,500,0.096,0.279,Tumor,Stroke,Normal,0.98,Therapy,Worsened,1
+12,47,F,Smoker,Alzheimer,0.973,0.253,0.798,0.279,0.742,Normal,147.15,49.9,866,0.941,0.7,Tumor,Tumor,Stroke,0.93,Therapy,Worsened,5
+13,55,M,Smoker,Epilepsy,0.849,0.159,0.946,0.105,0.785,Normal,50.08,17.01,393,0.398,0.847,Stroke,Normal,Tumor,0.87,,Improved,13
+14,55,F,Non-Smoker,Epilepsy,0.291,0.954,0.905,0.834,0.605,Alzheimer,102.89,48.95,379,0.518,0.856,Normal,Tumor,Tumor,0.76,Surgery,Improved,4
+15,62,M,Smoker,Epilepsy,0.264,0.969,0.638,0.736,0.794,Alzheimer,95.72,23.5,936,0.838,0.405,Normal,Alzheimer,Tumor,0.67,,Worsened,16
+16,68,F,Alcohol,Normal,0.265,0.828,0.93,0.756,0.544,Alzheimer,74.7,6.49,983,0.676,0.888,Normal,Tumor,Stroke,0.66,Therapy,Recovered,16
+17,71,M,Alcohol,Normal,0.374,0.374,0.18,0.794,0.57,Epilepsy,130.11,20.53,709,0.735,0.851,Normal,Epilepsy,Tumor,0.7,Medication,No Change,23
+18,25,F,Healthy,Normal,0.572,0.188,0.276,0.167,0.485,Epilepsy,122.72,33.55,297,0.209,0.936,Tumor,Epilepsy,Stroke,0.81,Surgery,Worsened,2
+19,44,M,Smoker,Alzheimer,0.489,0.716,0.141,0.423,0.123,Epilepsy,153.87,35.63,610,0.541,0.785,Normal,Alzheimer,Tumor,0.88,Medication,Recovered,17
+20,44,F,Healthy,Stroke,0.362,0.496,0.393,0.204,0.197,Normal,90.41,28.89,851,0.696,0.669,Stroke,Normal,Alzheimer,0.86,Medication,Improved,20

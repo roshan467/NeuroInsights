@@ -1,0 +1,21 @@
+patient_id,treatment_given,recovery_status,follow_up_duration_months
+1,Medication,Improved,5
+2,Medication,Worsened,23
+3,None,Recovered,10
+4,Medication,No Change,22
+5,Therapy,Recovered,5
+6,None,Improved,4
+7,Therapy,Improved,2
+8,Medication,Improved,20
+9,Surgery,Worsened,10
+10,Medication,Recovered,19
+11,Therapy,Worsened,1
+12,Therapy,Worsened,5
+13,None,Improved,13
+14,Surgery,Improved,4
+15,None,Worsened,16
+16,Therapy,Recovered,16
+17,Medication,No Change,23
+18,Surgery,Worsened,2
+19,Medication,Recovered,17
+20,Medication,Improved,20
