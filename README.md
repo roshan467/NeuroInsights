@@ -1,5 +1,4 @@
 
-https://neuroinsights-2susqdme7qzozkmjn2rua2.streamlit.app/
 
 
 # NeuroInsights Pro – Premium AI-Powered Neurological Data Analytics Platform
