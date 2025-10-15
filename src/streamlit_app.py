@@ -1128,7 +1128,7 @@ with tab3:
             st.warning(f"Feature importance analysis failed: {str(e)}")
     else:
         st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
-else:
+
     # Enhanced info when no AI features are selected
     st.markdown("""
     <div class="custom-card" style="text-align: center; padding: 40px;">
