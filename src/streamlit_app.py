@@ -982,7 +982,7 @@ with tab3:
         st.markdown("###  Clustering Analysis")
         st.markdown("""
         <div class="custom-card" style="margin-bottom: 20px;">
-            <h4 style="color: #FFD700; margin-top: 0;">🔍 Unsupervised Learning</h4>
+            <h4 style="color: #FFD700; margin-top: 0;'>🔍 Unsupervised Learning</h4>
             <p>Using K-Means clustering to discover hidden patterns in your data.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1131,51 +1131,51 @@ with tab3:
                 st.warning(f"Feature importance analysis failed: {str(e)}")
         else:
             st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
-else:
-    # Enhanced info when no AI features are selected
-    st.markdown("""
-    <div class="custom-card" style="text-align: center; padding: 40px;">
-        <h2 style="color: #FFD700; margin-top: 0;">🌟 Unlock Advanced AI Insights</h2>
-        <p style="font-size: 1.2em; color: #e0e0e0; max-width: 600px; margin: 0 auto 30px;">Please select AI/ML features from the sidebar to enable our advanced analytics engine.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Show AI/ML capabilities info with enhanced design
-    st.markdown("### 🚀 Available AI/ML Capabilities")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
+    else:
+        # Enhanced info when no AI features are selected
         st.markdown("""
-        <div class="custom-card" style="height: 100%;">
-            <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🤖 ML Predictions</h3>
-            <div style="text-align: center; margin: 20px 0;">
-                <span style="font-size: 3em;">🔮</span>
-            </div>
-            <p style="color: #e0e0e0;">Predict outcomes using Random Forest and other advanced algorithms with accuracy metrics and feature importance ranking.</p>
+        <div class="custom-card" style="text-align: center; padding: 40px;">
+            <h2 style="color: #FFD700; margin-top: 0;">🌟 Unlock Advanced AI Insights</h2>
+            <p style="font-size: 1.2em; color: #e0e0e0; max-width: 600px; margin: 0 auto 30px;">Please select AI/ML features from the sidebar to enable our advanced analytics engine.</p>
         </div>
         """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="custom-card" style="height: 100%;">
-            <h3 style="color: #FFD700; text-align: center; margin-top: 0;"> Clustering</h3>
-            <div style="text-align: center; margin: 20px 0;">
-                <span style="font-size: 3em;">🔍</span>
+        
+        # Show AI/ML capabilities info with enhanced design
+        st.markdown("### 🚀 Available AI/ML Capabilities")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            <div class="custom-card" style="height: 100%;">
+                <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🤖 ML Predictions</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <span style="font-size: 3em;">🔮</span>
+                </div>
+                <p style="color: #e0e0e0;">Predict outcomes using Random Forest and other advanced algorithms with accuracy metrics and feature importance ranking.</p>
             </div>
-            <p style="color: #e0e0e0;">Discover hidden patterns with K-Means and other unsupervised learning techniques with PCA visualization.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="custom-card" style="height: 100%;">
-            <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🎯 Feature Importance</h3>
-            <div style="text-align: center; margin: 20px 0;">
-                <span style="font-size: 3em;">📊</span>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="custom-card" style="height: 100%;">
+                <h3 style="color: #FFD700; text-align: center; margin-top: 0;"> Clustering</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <span style="font-size: 3em;">🔍</span>
+                </div>
+                <p style="color: #e0e0e0;">Discover hidden patterns with K-Means and other unsupervised learning techniques with PCA visualization.</p>
             </div>
-            <p style="color: #e0e0e0;">Identify which features most influence your target variables with correlation analysis and statistical ranking.</p>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown("""
+            <div class="custom-card" style="height: 100%;">
+                <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🎯 Feature Importance</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <span style="font-size: 3em;">📊</span>
+                </div>
+                <p style="color: #e0e0e0;">Identify which features most influence your target variables with correlation analysis and statistical ranking.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 # Premium footer with enhanced design
 st.markdown("""
