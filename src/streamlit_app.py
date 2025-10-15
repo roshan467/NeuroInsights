@@ -231,9 +231,9 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/processed')
 
 # Set page config with premium theme
 st.set_page_config(
-    page_title="Universal Data Analysis Dashboard - Advanced  Data Analytics",
+    page_title="Universal Data Analysis Dashboard - Advanced Data Analytics",
     layout="wide",
-    page_icon="",
+    page_icon="📈",
     initial_sidebar_state="expanded"
 )
 
@@ -294,7 +294,6 @@ with st.sidebar:
     show_clustering = st.checkbox("Clustering Analysis", value=False)
     show_feature_importance = st.checkbox("Feature Importance", value=False)
     
-    # Add action options
     st.markdown("### ⚙️ Actions")
     actions = st.multiselect(
         "Select Actions to Perform",
@@ -531,41 +530,34 @@ with tab1:
                     ax1.set_facecolor('#000000')
                     ax2.set_facecolor('#000000')
                     
-                    # Box plot with colored boxes - fix for single box case
-                    bp = merged[feature_cols[:5]].boxplot(ax=ax1, patch_artist=True)  # Limit to first 5 for clarity
-                    colors = ['#FFD700', '#FFA500', '#FF8C00', '#FF4500', '#FF6347']
+                    # Box plot with colored boxes
+                    bp = merged[feature_cols[:5]].boxplot(ax=ax1, patch_artist=True)
+                    colors = ['#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1']
                     
-                    # Handle both single and multiple box cases properly
-                    if len(feature_cols[:5]) == 1:
-                        # Single box case - bp is an Axes object
-                        bp.set_facecolor(colors[0])
-                        bp.set_alpha(0.8)
-                        bp.set_edgecolor('#FFFFFF')
-                    else:
-                        # Multiple boxes case - bp is a dictionary
-                        if isinstance(bp, dict):
-                            for i, patch in enumerate(bp['boxes']):
-                                patch.set_facecolor(colors[i % len(colors)])
-                                patch.set_alpha(0.8)
-                                patch.set_edgecolor('#FFFFFF')
-                            for i, whisker in enumerate(bp['whiskers']):
-                                whisker.set_color('#FFFFFF')
-                                whisker.set_linewidth(2)
-                            for i, cap in enumerate(bp['caps']):
-                                cap.set_color('#FFFFFF')
-                                cap.set_linewidth(2)
-                            for i, median in enumerate(bp['medians']):
-                                median.set_color('#FFFFFF')
-                                median.set_linewidth(2)
-                        else:
-                            # Handle case where bp is not a dictionary
-                            try:
-                                bp.set_facecolor(colors[0])
-                                bp.set_alpha(0.8)
-                                bp.set_edgecolor('#FFFFFF')
-                            except:
-                                pass  # Silently ignore if we can't style it
-                    
+                    # Check if bp is a dictionary before trying to style patches
+                    if isinstance(bp, dict) and 'boxes' in bp:
+                        # Style boxes
+                        for i, patch in enumerate(bp['boxes']):
+                            patch.set_facecolor(colors[i % len(colors)])
+                            patch.set_alpha(0.8)
+                            patch.set_edgecolor('#FFFFFF')
+                        
+                        # Style whiskers
+                        for whisker in bp.get('whiskers', []):
+                            whisker.set_color('#FFFFFF')
+                            whisker.set_linewidth(2)
+                        
+                        # Style caps
+                        for cap in bp.get('caps', []):
+                            cap.set_color('#FFFFFF')
+                            cap.set_linewidth(2)
+                        
+                        # Style medians
+                        for median in bp.get('medians', []):
+                            median.set_color('#FFFFFF')
+                            median.set_linewidth(2)
+
+                    # Axes styling
                     ax1.set_title("Feature Distribution", fontsize=16, color='#FFFFFF', fontweight='bold')
                     ax1.set_ylabel("Values", color='white')
                     ax1.tick_params(colors='white', labelsize=10)
@@ -648,9 +640,9 @@ with tab2:
                 if "Heatmaps" in chart_types:
                     if viz_type == "Interactive (Plotly)":
                         fig = px.imshow(corr_data, 
-                                        title="Feature Correlation Heatmap",
-                                        color_continuous_scale=['#0f2027', '#203a43', '#2c5364', '#FFD700'],
-                                        labels=dict(color="Correlation"))
+                                         title="Feature Correlation Heatmap",
+                                         color_continuous_scale=['#0f2027', '#203a43', '#2c5364', '#FFD700'],
+                                         labels=dict(color="Correlation"))
                         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                                           plot_bgcolor='rgba(0,0,0,0)',
                                           font=dict(color="white"),
@@ -676,9 +668,9 @@ with tab2:
                                                  title=f"Top Correlations with {label_col}",
                                                  color_discrete_sequence=['#FFD700'])
                                     fig2.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                                      plot_bgcolor='rgba(0,0,0,0)',
-                                                      font=dict(color="white"),
-                                                      title_font=dict(color="#FFD700", size=16))
+                                                       plot_bgcolor='rgba(0,0,0,0)',
+                                                       font=dict(color="white"),
+                                                       title_font=dict(color="#FFD700", size=16))
                                     st.plotly_chart(fig2, use_container_width=True)
                     else:
                         fig, ax = plt.subplots(figsize=(14, 12))
@@ -970,8 +962,8 @@ with tab3:
                 
                 # Plot feature importance
                 fig = px.bar(feature_importance, x='importance', y='feature', orientation='h',
-                           title='Top 10 Feature Importances',
-                           color_discrete_sequence=['#FFD700'])
+                             title='Top 10 Feature Importances',
+                             color_discrete_sequence=['#FFD700'])
                 fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                                   plot_bgcolor='rgba(0,0,0,0)',
                                   font=dict(color="white"),
@@ -1019,34 +1011,51 @@ with tab3:
             
             # Create scatter plot
             fig = px.scatter(x=df_pca[:, 0], y=df_pca[:, 1], color=cluster_labels,
-                           title=f'Clustering Results (PCA Visualization)',
-                           labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.2%} variance)', 
-                                   'y': f'PC2 ({pca.explained_variance_ratio_[1]:.2%} variance)'},
-                           color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
+                             title=f'Clustering Results (PCA Visualization)',
+                             labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.2%} variance)', 
+                                     'y': f'PC2 ({pca.explained_variance_ratio_[1]:.2%} variance)'},
+                             color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'],
+                             hover_data=[merged.index])
             fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                               plot_bgcolor='rgba(0,0,0,0)',
                               font=dict(color="white"),
                               title_font=dict(color="#FFD700", size=18))
             st.plotly_chart(fig, use_container_width=True)
             
-            # Show cluster statistics
+            # Show cluster statistics in premium cards
             st.markdown("### 📊 Cluster Statistics")
+            cluster_counts = pd.Series(cluster_labels).value_counts().sort_index()
+            cols = st.columns(len(cluster_counts))
+            for i, (cluster_id, count) in enumerate(cluster_counts.items()):
+                with cols[i]:
+                    st.markdown(f"""
+                    <div class="custom-card" style="text-align: center;">
+                        <h4 style="color: #FFD700; margin-bottom: 10px;">Cluster {cluster_id}</h4>
+                        <p style="font-size: 1.8em; font-weight: bold; color: #FFFFFF; margin: 0;">{count}</p>
+                        <p style="color: #aaaaaa; margin: 5px 0 0 0;">samples</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+            # Show detailed cluster statistics
+            st.markdown("### 📈 Detailed Cluster Analysis")
             agg_dict = {}
             for col in df_cluster.columns[:5]:  # Show first 5 numeric columns
                 agg_dict[col] = ['mean', 'std']
-            cluster_stats = merged.groupby('Cluster').agg(agg_dict).round(3)
-            st.dataframe(cluster_stats)
+            cluster_stats = merged.groupby('Cluster').agg(agg_dict).round(3).copy()
+            st.dataframe(cluster_stats, width='stretch')
             
         except Exception as e:
             st.warning(f"Clustering analysis failed: {str(e)}")
+    else:
+        st.info("Please select 'Clustering Analysis' in the sidebar to enable this feature.")
     
-    # Add Feature Importance Analysis
+    # Add Feature Importance Analysis if selected
     if show_feature_importance and label_columns:
         st.markdown("### 🎯 Feature Importance Analysis")
         st.markdown("""
-        <div class="custom-card" style="margin-bottom: 20px;">
-            <h4 style="color: #FFD700; margin-top: 0;">📊 Statistical Feature Importance</h4>
-            <p>Advanced statistical methods to determine which features most influence outcomes.</p>
+        <div class="custom-card" style="margin-bottom: 25px;">
+            <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
+            <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1080,415 +1089,96 @@ with tab3:
                 
                 # Create DataFrame
                 corr_data = {"Feature": [item[0] for item in correlations[:15]], 
-                            "Correlation": [item[1] for item in correlations[:15]]}
-                corr_df = pd.DataFrame(corr_data)
+                             "Correlation": [item[1] for item in correlations[:15]]}
+                corr_df = pd.DataFrame(corr_data).copy()
                 
-                # Plot
+                # Plot with enhanced styling
                 fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
-                           title='Top 15 Features by Correlation with Target',
-                           color_discrete_sequence=['#FFD700'])
+                             title='Top 15 Features by Correlation with Target',
+                             color='Correlation',
+                             color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
                 fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                                   plot_bgcolor='rgba(0,0,0,0)',
                                   font=dict(color="white"),
-                                  title_font=dict(color="#FFD700", size=18))
+                                  title_font=dict(color="#FFD700", size=20))
                 st.plotly_chart(fig, use_container_width=True)
+                
+                # Show correlation statistics
+                if len(correlations) > 0:
+                    max_corr = max([corr[1] for corr in correlations])
+                    avg_corr = np.mean([corr[1] for corr in correlations])
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.markdown(f"""
+                        <div class="custom-card" style="text-align: center;">
+                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
+                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    with col2:
+                        st.markdown(f"""
+                        <div class="custom-card" style="text-align: center;">
+                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
+                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                 
         except Exception as e:
             st.warning(f"Feature importance analysis failed: {str(e)}")
-
-with tab4:
-    st.subheader("📂 Export Cleaned Data")
-    
-    # Add a premium info box
+    else:
+        st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
+else:
+    # Enhanced info when no AI features are selected
     st.markdown("""
-    <div class="custom-card" style="margin-bottom: 20px;">
-        <h4 style="color: #FFD700; margin-top: 0;">📤 Data Export Options</h4>
-        <p>Download your processed dataset for further analysis in Power BI, Tableau, or other analytics tools.</p>
+    <div class="custom-card" style="text-align: center; padding: 40px;">
+        <h2 style="color: #FFD700; margin-top: 0;">🌟 Unlock Advanced AI Insights</h2>
+        <p style="font-size: 1.2em; color: #e0e0e0; max-width: 600px; margin: 0 auto 30px;">Please select AI/ML features from the sidebar to enable our advanced analytics engine.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Show data info
-    st.markdown(f"**Dataset Info:** {merged.shape[0]} rows × {merged.shape[1]} columns")
-    
-    # Create export options
-    col1, col2 = st.columns(2)
+    # Show AI/ML capabilities info with enhanced design
+    st.markdown("### 🚀 Available AI/ML Capabilities")
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("### 📄 CSV Export")
-        st.markdown("<p style='color: #aaaaaa;'>Best for data analysis and machine learning</p>", unsafe_allow_html=True)
-        # Download button with premium styling
-        if "Export Cleaned Data" in actions:
-            st.download_button(
-                label="💾 Download Cleaned Dataset (CSV)",
-                data=merged.to_csv(index=False).encode('utf-8'),
-                file_name='Universal Data Analysis Dashboard cleaned dataset.csv',
-                mime='text/csv',
-                key='download_csv'
-            )
+        st.markdown("""
+        <div class="custom-card" style="height: 100%;">
+            <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🤖 ML Predictions</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <span style="font-size: 3em;">🔮</span>
+            </div>
+            <p style="color: #e0e0e0;">Predict outcomes using Random Forest and other advanced algorithms with accuracy metrics and feature importance ranking.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### 📊 Analytics Integration")
-        st.markdown("<p style='color: #aaaaaa;'>Connect directly to visualization tools</p>", unsafe_allow_html=True)
-        st.button("🔗 Connect to Power BI", disabled=True)
-        st.button("📊 Connect to Tableau", disabled=True)
-        st.info("Direct integrations coming soon!")
-    
-    # Export as Excel if possible
-    try:
-        st.info("Excel export requires additional setup. Please use the CSV download for now.")
-    except:
-        st.info("Excel export requires openpyxl. Install it with: pip install openpyxl")
-    
-    # Add data quality report
-    st.markdown("### 📋 Data Quality Report")
-    # Calculate data quality metrics
-    missing_values = merged.isnull().sum().sum()
-    duplicates = merged.duplicated().sum()
-    
-    st.markdown(f"""
-    <div class="custom-card">
-        <h4>Data Quality Summary</h4>
-        <ul>
-            <li>✅ Missing values handled: <strong>{'Yes' if missing_values == 0 else 'Partially'}</strong></li>
-            <li>✅ Duplicates removed: <strong>{'Yes' if duplicates == 0 else 'No'}</strong></li>
-            <li>✅ Data types validated: <strong>Yes</strong></li>
-            <li>✅ Ready for analysis: <strong>Yes</strong></li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-with tab5:
-    st.subheader("🤖 Advanced AI Analytics")
-    
-    # Enhanced premium header for AI Analytics
-    st.markdown("""
-    <div style="text-align: center; padding: 30px; border-radius: 20px; background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1)); margin-bottom: 30px; border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(10px);">
-        <h1 style="background: linear-gradient(90deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; margin-bottom: 15px;"> AI-Powered Insights Engine</h1>
-        <p style="font-size: 1.3em; color: #e0e0e0; max-width: 800px; margin: 0 auto;">Advanced machine learning algorithms and deep analytics to uncover hidden patterns and predict outcomes.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Show available AI/ML features based on sidebar selections
-    ai_features_selected = []
-    if show_ml_predictions:
-        ai_features_selected.append("ML Predictions")
-    if show_clustering:
-        ai_features_selected.append("Clustering Analysis")
-    if show_feature_importance:
-        ai_features_selected.append("Feature Importance")
-    
-    if ai_features_selected:
-        # Enhanced section header
-        st.markdown(f"""
-        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
-            <h2 style="color: #FFD700; margin-top: 0;">🚀 Active AI Features: {', '.join(ai_features_selected)}</h2>
-            <p style="color: #aaaaaa; font-size: 1.1em;">Powered by cutting-edge machine learning algorithms</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Create tabs for different AI features
-        ai_tabs = st.tabs(["🔮 ML Predictions", "🔍 Clustering", "🎯 Feature Importance"])
-        
-        # Show ML Predictions if selected
-        with ai_tabs[0]:
-            if show_ml_predictions and label_columns:
-                st.markdown("""
-                <div class="custom-card" style="margin-bottom: 25px;">
-                    <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🤖 Machine Learning Predictions</h3>
-                    <p style="font-size: 1.1em;">Using Random Forest algorithm to predict outcomes based on your data patterns.</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                try:
-                    # Prepare data for ML
-                    df_ml = merged.copy()
-                    
-                    # Encode categorical variables
-                    label_encoders = {}
-                    for col in df_ml.select_dtypes(include=['object']).columns:
-                        if col in label_columns:
-                            le = LabelEncoder()
-                            df_ml[col] = le.fit_transform(df_ml[col].astype(str))
-                            label_encoders[col] = le
-                        else:
-                            # For other categorical columns, we'll use one-hot encoding
-                            df_ml = pd.get_dummies(df_ml, columns=[col], prefix=col)
-                    
-                    # Select target column (first label column)
-                    target_col = label_columns[0]
-                    
-                    # Prepare features and target
-                    if target_col in df_ml.columns:
-                        X = df_ml.drop(columns=[target_col])
-                        y = df_ml[target_col]
-                        
-                        # Split data
-                        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-                        
-                        # Scale features
-                        scaler = StandardScaler()
-                        X_train_scaled = scaler.fit_transform(X_train)
-                        X_test_scaled = scaler.transform(X_test)
-                        
-                        # Train Random Forest model
-                        rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-                        rf_model.fit(X_train_scaled, y_train)
-                        
-                        # Make predictions
-                        y_pred = rf_model.predict(X_test_scaled)
-                        accuracy = accuracy_score(y_test, y_pred)
-                        
-                        # Display results in premium cards
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.markdown(f"""
-                            <div class="custom-card" style="text-align: center;">
-                                <h3 style="color: #FFFFFF; margin-bottom: 15px;">🎯 Model Accuracy</h3>
-                                <p style="font-size: 2.5em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{accuracy:.2%}</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        with col2:
-                            st.markdown(f"""
-                            <div class="custom-card" style="text-align: center;">
-                                <h3 style="color: #FFFFFF; margin-bottom: 15px;">📊 Test Samples</h3>
-                                <p style="font-size: 2.5em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{len(y_test)}</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        
-                        # Feature importance
-                        st.markdown("### 📊 Feature Importance Ranking")
-                        feature_importance = pd.DataFrame({
-                            'feature': X.columns,
-                            'importance': rf_model.feature_importances_
-                        }).sort_values('importance', ascending=False).head(10)
-                        
-                        # Plot feature importance
-                        fig = px.bar(feature_importance, x='importance', y='feature', orientation='h',
-                                   title='Top 10 Most Important Features',
-                                   color='importance',
-                                   color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
-                        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                          plot_bgcolor='rgba(0,0,0,0)',
-                                          font=dict(color="white"),
-                                          title_font=dict(color="#FFD700", size=20))
-                        st.plotly_chart(fig, use_container_width=True)
-                        
-                        # Show classification report in a premium card
-                        st.markdown("### 📋 Detailed Classification Report")
-                        st.markdown("""
-                        <div class="custom-card">
-                            <pre style="color: #e0e0e0; font-family: 'Courier New', monospace; font-size: 0.9em;">{classification_report(y_test, y_pred)}</pre>
-                        </div>
-                        """.format(classification_report=classification_report(y_test, y_pred)), unsafe_allow_html=True)
-                        
-                except Exception as e:
-                    st.warning(f"ML Prediction failed: {str(e)}")
-            else:
-                st.info("Please select 'ML Predictions' in the sidebar and ensure your dataset has label columns.")
-        
-        # Show Clustering Analysis if selected
-        with ai_tabs[1]:
-            if show_clustering:
-                st.markdown("""
-                <div class="custom-card" style="margin-bottom: 25px;">
-                    <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🔍 Clustering Analysis</h3>
-                    <p style="font-size: 1.1em;">Using K-Means clustering to discover hidden patterns in your data.</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                try:
-                    # Prepare data for clustering
-                    df_cluster = merged.select_dtypes(include=[np.number]).copy()
-                    
-                    # Handle missing values
-                    df_cluster = df_cluster.fillna(df_cluster.mean())
-                    
-                    # Scale data
-                    scaler = StandardScaler()
-                    df_cluster_scaled = scaler.fit_transform(df_cluster)
-                    
-                    # Apply K-Means clustering
-                    kmeans = KMeans(n_clusters=3, random_state=42)
-                    cluster_labels = kmeans.fit_predict(df_cluster_scaled)
-                    
-                    # Add cluster labels to original data
-                    merged['Cluster'] = cluster_labels
-                    
-                    # Apply PCA for visualization
-                    pca = PCA(n_components=2)
-                    df_pca = pca.fit_transform(df_cluster_scaled)
-                    
-                    # Create enhanced scatter plot
-                    fig = px.scatter(x=df_pca[:, 0], y=df_pca[:, 1], color=cluster_labels,
-                                   title=f'Clustering Results (PCA Visualization)',
-                                   labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.2%} variance)', 
-                                           'y': f'PC2 ({pca.explained_variance_ratio_[1]:.2%} variance)'},
-                                   color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'],
-                                   hover_data=[merged.index])
-                    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                      plot_bgcolor='rgba(0,0,0,0)',
-                                      font=dict(color="white"),
-                                      title_font=dict(color="#FFD700", size=20))
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Show cluster statistics in premium cards
-                    st.markdown("### 📊 Cluster Statistics")
-                    cluster_counts = pd.Series(cluster_labels).value_counts().sort_index()
-                    cols = st.columns(len(cluster_counts))
-                    for i, (cluster_id, count) in enumerate(cluster_counts.items()):
-                        with cols[i]:
-                            st.markdown(f"""
-                            <div class="custom-card" style="text-align: center;">
-                                <h4 style="color: #FFD700; margin-bottom: 10px;">Cluster {cluster_id}</h4>
-                                <p style="font-size: 1.8em; font-weight: bold; color: #FFFFFF; margin: 0;">{count}</p>
-                                <p style="color: #aaaaaa; margin: 5px 0 0 0;">samples</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                    
-                    # Show detailed cluster statistics
-                    st.markdown("### 📈 Detailed Cluster Analysis")
-                    agg_dict = {}
-                    for col in df_cluster.columns[:5]:  # Show first 5 numeric columns
-                        agg_dict[col] = ['mean', 'std']
-                    cluster_stats = merged.groupby('Cluster').agg(agg_dict).round(3).copy()
-                    st.dataframe(cluster_stats, width='stretch')
-                    
-                except Exception as e:
-                    st.warning(f"Clustering analysis failed: {str(e)}")
-            else:
-                st.info("Please select 'Clustering Analysis' in the sidebar to enable this feature.")
-        
-        # Show Feature Importance Analysis if selected
-        with ai_tabs[2]:
-            if show_feature_importance and label_columns:
-                st.markdown("""
-                <div class="custom-card" style="margin-bottom: 25px;">
-                    <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
-                    <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                try:
-                    # Prepare data
-                    df_fi = merged.copy()
-                    
-                    # Encode categorical variables
-                    for col in df_fi.select_dtypes(include=['object']).columns:
-                        le = LabelEncoder()
-                        df_fi[col] = le.fit_transform(df_fi[col].astype(str))
-                    
-                    # Select target column
-                    target_col = label_columns[0]
-                    
-                    if target_col in df_fi.columns:
-                        # Calculate correlation-based feature importance
-                        correlations = []
-                        for col in df_fi.columns:
-                            if col != target_col:
-                                try:
-                                    # Calculate correlation with error handling
-                                    corr_val = abs(np.corrcoef(df_fi[col], df_fi[target_col])[0, 1])
-                                    if not np.isnan(corr_val):
-                                        correlations.append((col, corr_val))
-                                except:
-                                    pass  # Skip columns that can't be correlated
-                        
-                        # Sort by correlation
-                        correlations.sort(key=lambda x: x[1], reverse=True)
-                        
-                        # Create DataFrame
-                        corr_data = {"Feature": [item[0] for item in correlations[:15]], 
-                                    "Correlation": [item[1] for item in correlations[:15]]}
-                        corr_df = pd.DataFrame(corr_data).copy()
-                        
-                        # Plot with enhanced styling
-                        fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
-                                   title='Top 15 Features by Correlation with Target',
-                                   color='Correlation',
-                                   color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
-                        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                          plot_bgcolor='rgba(0,0,0,0)',
-                                          font=dict(color="white"),
-                                          title_font=dict(color="#FFD700", size=20))
-                        st.plotly_chart(fig, use_container_width=True)
-                        
-                        # Show correlation statistics
-                        if len(correlations) > 0:
-                            max_corr = max([corr[1] for corr in correlations])
-                            avg_corr = np.mean([corr[1] for corr in correlations])
-                            
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.markdown(f"""
-                                <div class="custom-card" style="text-align: center;">
-                                    <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
-                                    <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
-                                </div>
-                                """, unsafe_allow_html=True)
-                            with col2:
-                                st.markdown(f"""
-                                <div class="custom-card" style="text-align: center;">
-                                    <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
-                                    <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
-                                </div>
-                                """, unsafe_allow_html=True)
-                        
-                except Exception as e:
-                    st.warning(f"Feature importance analysis failed: {str(e)}")
-            else:
-                st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
-    else:
-        # Enhanced info when no AI features are selected
         st.markdown("""
-        <div class="custom-card" style="text-align: center; padding: 40px;">
-            <h2 style="color: #FFD700; margin-top: 0;">🌟 Unlock Advanced AI Insights</h2>
-            <p style="font-size: 1.2em; color: #e0e0e0; max-width: 600px; margin: 0 auto 30px;">Please select AI/ML features from the sidebar to enable our advanced analytics engine.</p>
+        <div class="custom-card" style="height: 100%;">
+            <h3 style="color: #FFD700; text-align: center; margin-top: 0;"> Clustering</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <span style="font-size: 3em;">🔍</span>
+            </div>
+            <p style="color: #e0e0e0;">Discover hidden patterns with K-Means and other unsupervised learning techniques with PCA visualization.</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Show AI/ML capabilities info with enhanced design
-        st.markdown("### 🚀 Available AI/ML Capabilities")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.markdown("""
-            <div class="custom-card" style="height: 100%;">
-                <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🤖 ML Predictions</h3>
-                <div style="text-align: center; margin: 20px 0;">
-                    <span style="font-size: 3em;">🔮</span>
-                </div>
-                <p style="color: #e0e0e0;">Predict outcomes using Random Forest and other advanced algorithms with accuracy metrics and feature importance ranking.</p>
+    
+    with col3:
+        st.markdown("""
+        <div class="custom-card" style="height: 100%;">
+            <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🎯 Feature Importance</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <span style="font-size: 3em;">📊</span>
             </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-            <div class="custom-card" style="height: 100%;">
-                <h3 style="color: #FFD700; text-align: center; margin-top: 0;"> Clustering</h3>
-                <div style="text-align: center; margin: 20px 0;">
-                    <span style="font-size: 3em;">🔍</span>
-                </div>
-                <p style="color: #e0e0e0;">Discover hidden patterns with K-Means and other unsupervised learning techniques with PCA visualization.</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown("""
-            <div class="custom-card" style="height: 100%;">
-                <h3 style="color: #FFD700; text-align: center; margin-top: 0;">🎯 Feature Importance</h3>
-                <div style="text-align: center; margin: 20px 0;">
-                    <span style="font-size: 3em;">📊</span>
-                </div>
-                <p style="color: #e0e0e0;">Identify which features most influence your target variables with correlation analysis and statistical ranking.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            <p style="color: #e0e0e0;">Identify which features most influence your target variables with correlation analysis and statistical ranking.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 # Premium footer with enhanced design
 st.markdown("""
 <hr style="border: 1px solid rgba(255, 255, 255, 0.1);">
 <div style="text-align: center; padding: 30px; border-radius: 25px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 12px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);">
-    <p style="font-weight: bold; font-size: 1.4em; background: linear-gradient(90deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0;">Universal Data Analysis Dashboard- Advanced  Data Analytics Platform</p>
+    <p style="font-weight: bold; font-size: 1.4em; background: linear-gradient(90deg, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 10px 0;">Universal Data Analysis Dashboard- Advanced Data Analytics Platform</p>
     <p style="font-size: 1.2em; color: #e0e0e0;">Powered by AI & Machine Learning</p>
     <p style="color: #aaaaaa; margin-top: 15px;">Transforming complex neurological data into actionable medical insights</p>
     <p style="color: #666666; font-size: 0.9em; margin-top: 20px;">© 2025 Universal Data Analysis Dashboard | Secure & HIPAA Compliant | Real-time Analysis</p>
