@@ -1127,10 +1127,10 @@ with tab3:
                             <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
                         </div>
                         """, unsafe_allow_html=True)
-            except Exception as e:
-                st.warning(f"Feature importance analysis failed: {str(e)}")
-        else:
-            st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
+        except Exception as e:
+            st.warning(f"Feature importance analysis failed: {str(e)}")
+    else:
+        st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
 else:
     # Enhanced info when no AI features are selected
     st.markdown("""
