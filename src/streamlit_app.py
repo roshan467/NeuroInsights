@@ -1054,83 +1054,84 @@ with tab3:
         st.info("Please select 'Clustering Analysis' in the sidebar to enable this feature.")
     
     # Add Feature Importance Analysis if selected
-    with ai_tabs[2]:
-        if show_feature_importance and label_columns:
-            st.markdown("""
-            <div class="custom-card" style="margin-bottom: 25px;">
-                <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
-                <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
-            </div>
-            """, unsafe_allow_html=True)
+    if show_feature_importance and label_columns:
+        st.markdown("### 🎯 Feature Importance Analysis")
+        st.markdown("""
+        <div class="custom-card" style="margin-bottom: 25px;">
+            <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
+            <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        try:
+            # Prepare data
+            df_fi = merged.copy()
             
-            try:
-                # Prepare data
-                df_fi = merged.copy()
+            # Encode categorical variables
+            for col in df_fi.select_dtypes(include=['object']).columns:
+                le = LabelEncoder()
+                df_fi[col] = le.fit_transform(df_fi[col].astype(str))
+            
+            # Select target column
+            target_col = label_columns[0]
+            
+            if target_col in df_fi.columns:
+                # Calculate correlation-based feature importance
+                correlations = []
+                for col in df_fi.columns:
+                    if col != target_col:
+                        try:
+                            # Calculate correlation with error handling
+                            corr_val = abs(np.corrcoef(df_fi[col], df_fi[target_col])[0, 1])
+                            if not np.isnan(corr_val):
+                                correlations.append((col, corr_val))
+                        except:
+                            pass  # Skip columns that can't be correlated
                 
-                # Encode categorical variables
-                for col in df_fi.select_dtypes(include=['object']).columns:
-                    le = LabelEncoder()
-                    df_fi[col] = le.fit_transform(df_fi[col].astype(str))
+                # Sort by correlation
+                correlations.sort(key=lambda x: x[1], reverse=True)
                 
-                # Select target column
-                target_col = label_columns[0]
+                # Create DataFrame
+                corr_data = {"Feature": [item[0] for item in correlations[:15]],
+                             "Correlation": [item[1] for item in correlations[:15]]}
+                corr_df = pd.DataFrame(corr_data).copy()
                 
-                if target_col in df_fi.columns:
-                    # Calculate correlation-based feature importance
-                    correlations = []
-                    for col in df_fi.columns:
-                        if col != target_col:
-                            try:
-                                # Calculate correlation with error handling
-                                corr_val = abs(np.corrcoef(df_fi[col], df_fi[target_col])[0, 1])
-                                if not np.isnan(corr_val):
-                                    correlations.append((col, corr_val))
-                            except:
-                                pass  # Skip columns that can't be correlated
+                # Plot with enhanced styling
+                fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
+                             title='Top 15 Features by Correlation with Target',
+                             color='Correlation',
+                             color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
+                fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                                  plot_bgcolor='rgba(0,0,0,0)',
+                                  font=dict(color="white"),
+                                  title_font=dict(color="#FFD700", size=20))
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show correlation statistics
+                if len(correlations) > 0:
+                    max_corr = max([corr[1] for corr in correlations])
+                    avg_corr = np.mean([corr[1] for corr in correlations])
                     
-                    # Sort by correlation
-                    correlations.sort(key=lambda x: x[1], reverse=True)
-                    
-                    # Create DataFrame
-                    corr_data = {"Feature": [item[0] for item in correlations[:15]],
-                                 "Correlation": [item[1] for item in correlations[:15]]}
-                    corr_df = pd.DataFrame(corr_data).copy()
-                    
-                    # Plot with enhanced styling
-                    fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
-                                 title='Top 15 Features by Correlation with Target',
-                                 color='Correlation',
-                                 color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
-                    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                      plot_bgcolor='rgba(0,0,0,0)',
-                                      font=dict(color="white"),
-                                      title_font=dict(color="#FFD700", size=20))
-                    st.plotly_chart(fig, use_container_width=True)
-                    
-                    # Show correlation statistics
-                    if len(correlations) > 0:
-                        max_corr = max([corr[1] for corr in correlations])
-                        avg_corr = np.mean([corr[1] for corr in correlations])
-                        
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            st.markdown(f"""
-                            <div class="custom-card" style="text-align: center;">
-                                <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
-                                <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        with col2:
-                            st.markdown(f"""
-                            <div class="custom-card" style="text-align: center;">
-                                <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
-                                <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
-                            </div>
-                            """, unsafe_allow_html=True)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.markdown(f"""
+                        <div class="custom-card" style="text-align: center;">
+                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
+                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    with col2:
+                        st.markdown(f"""
+                        <div class="custom-card" style="text-align: center;">
+                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
+                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
             except Exception as e:
                 st.warning(f"Feature importance analysis failed: {str(e)}")
         else:
             st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
+else:
     # Enhanced info when no AI features are selected
     st.markdown("""
     <div class="custom-card" style="text-align: center; padding: 40px;">
