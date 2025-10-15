@@ -515,7 +515,7 @@ with tab1:
                     mean_values = [merged[col].mean() for col in feature_cols[:5]]
                     fig.add_trace(go.Bar(x=feature_cols[:5], y=mean_values, marker_color='#FFA500'), row=2, col=1)
                     
-                    fig.update_layout(height=600, showlegend=False, 
+                    fig.update_layout(height=600, showlegend=False,
                                       paper_bgcolor='rgba(0,0,0,0)',
                                       plot_bgcolor='rgba(0,0,0,0)',
                                       font=dict(color="white"),
@@ -535,7 +535,7 @@ with tab1:
                     colors = ['#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1']
                     
                     # Check if bp is a dictionary before trying to style patches
-                    if isinstance(bp, dict) and 'boxes' in bp:
+                    if isinstance(bp, dict):
                         # Style boxes
                         for i, patch in enumerate(bp['boxes']):
                             patch.set_facecolor(colors[i % len(colors)])
@@ -556,7 +556,7 @@ with tab1:
                         for median in bp.get('medians', []):
                             median.set_color('#FFFFFF')
                             median.set_linewidth(2)
-
+                    
                     # Axes styling
                     ax1.set_title("Feature Distribution", fontsize=16, color='#FFFFFF', fontweight='bold')
                     ax1.set_ylabel("Values", color='white')
@@ -586,10 +586,10 @@ with tab1:
                     # Add value labels on bars
                     for bar, value in zip(bars, mean_values):
                         if chart_orientation == "Horizontal":
-                            ax2.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
+                            ax2.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2,
                                      f'{value:.3f}', ha='left', va='center', color='white', fontweight='bold', fontsize=10)
                         else:
-                            ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                            ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                                      f'{value:.3f}', ha='center', va='bottom', color='white', fontweight='bold', fontsize=10)
                     
                     st.pyplot(fig)
@@ -681,14 +681,14 @@ with tab2:
                         # Use a vibrant colormap
                         # Handle potential NaN values in correlation calculation
                         try:
-                            im = sns.heatmap(corr_data, annot=True, cmap='RdYlGn', center=0, ax=ax, 
-                                             cbar_kws={'label': 'Correlation'}, 
+                            im = sns.heatmap(corr_data, annot=True, cmap='RdYlGn', center=0, ax=ax,
+                                             cbar_kws={'label': 'Correlation'},
                                              annot_kws={"size": 10, "weight": "bold"},
                                              linewidths=0.5, linecolor='#333333')
                         except Exception as e:
                             # Fallback if there are issues with the correlation heatmap
-                            im = sns.heatmap(corr_data.fillna(0), annot=True, cmap='RdYlGn', center=0, ax=ax, 
-                                             cbar_kws={'label': 'Correlation'}, 
+                            im = sns.heatmap(corr_data.fillna(0), annot=True, cmap='RdYlGn', center=0, ax=ax,
+                                             cbar_kws={'label': 'Correlation'},
                                              annot_kws={"size": 10, "weight": "bold"},
                                              linewidths=0.5, linecolor='#333333')
                         
@@ -748,10 +748,10 @@ with tab2:
                                     # Add value labels on bars
                                     for i, (bar, value) in enumerate(zip(bars, top_corr.values)):
                                         if chart_orientation == "Horizontal":
-                                            ax2.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
+                                            ax2.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2,
                                                      f'{value:.3f}', ha='left', va='center', color='white', fontweight='bold')
                                         else:
-                                            ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+                                            ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                                                      f'{value:.3f}', ha='center', va='bottom', color='white', fontweight='bold')
                                     st.pyplot(fig2)
                                     plt.close(fig2)  # Close the figure to prevent memory warnings
@@ -821,7 +821,7 @@ with tab3:
         key_features = numeric_cols[:4] if len(numeric_cols) >= 4 else numeric_cols
         
         if key_features:
-            st.markdown(f"<p style='color: #aaaaaa; font-size: 1.1em;'><strong>{len(key_features)}</strong> key features selected for distribution analysis</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color: #aaaaaa; font-size: 1.1em;'><strong>{len(key_features)}</strong> important features detected for analysis</p>", unsafe_allow_html=True)
             if "Histograms" in chart_types:
                 if viz_type == "Interactive (Plotly)":
                     fig = make_subplots(rows=1, cols=len(key_features), subplot_titles=key_features)
@@ -994,55 +994,59 @@ with tab3:
             # Handle missing values
             df_cluster = df_cluster.fillna(df_cluster.mean())
             
-            # Scale data
-            scaler = StandardScaler()
-            df_cluster_scaled = scaler.fit_transform(df_cluster)
-            
-            # Apply K-Means clustering
-            kmeans = KMeans(n_clusters=3, random_state=42)
-            cluster_labels = kmeans.fit_predict(df_cluster_scaled)
-            
-            # Add cluster labels to original data
-            merged['Cluster'] = cluster_labels
-            
-            # Apply PCA for visualization
-            pca = PCA(n_components=2)
-            df_pca = pca.fit_transform(df_cluster_scaled)
-            
-            # Create scatter plot
-            fig = px.scatter(x=df_pca[:, 0], y=df_pca[:, 1], color=cluster_labels,
-                             title=f'Clustering Results (PCA Visualization)',
-                             labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.2%} variance)', 
-                                     'y': f'PC2 ({pca.explained_variance_ratio_[1]:.2%} variance)'},
-                             color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'],
-                             hover_data=[merged.index])
-            fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                              plot_bgcolor='rgba(0,0,0,0)',
-                              font=dict(color="white"),
-                              title_font=dict(color="#FFD700", size=18))
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Show cluster statistics in premium cards
-            st.markdown("### 📊 Cluster Statistics")
-            cluster_counts = pd.Series(cluster_labels).value_counts().sort_index()
-            cols = st.columns(len(cluster_counts))
-            for i, (cluster_id, count) in enumerate(cluster_counts.items()):
-                with cols[i]:
-                    st.markdown(f"""
-                    <div class="custom-card" style="text-align: center;">
-                        <h4 style="color: #FFD700; margin-bottom: 10px;">Cluster {cluster_id}</h4>
-                        <p style="font-size: 1.8em; font-weight: bold; color: #FFFFFF; margin: 0;">{count}</p>
-                        <p style="color: #aaaaaa; margin: 5px 0 0 0;">samples</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-            
-            # Show detailed cluster statistics
-            st.markdown("### 📈 Detailed Cluster Analysis")
-            agg_dict = {}
-            for col in df_cluster.columns[:5]:  # Show first 5 numeric columns
-                agg_dict[col] = ['mean', 'std']
-            cluster_stats = merged.groupby('Cluster').agg(agg_dict).round(3).copy()
-            st.dataframe(cluster_stats, width='stretch')
+            # Add a check for a sufficient number of features before running PCA
+            if df_cluster.shape[1] < 2:
+                st.warning("Clustering analysis requires at least two numeric features to perform PCA for visualization. Please upload a dataset with more numeric columns.")
+            else:
+                # Scale data
+                scaler = StandardScaler()
+                df_cluster_scaled = scaler.fit_transform(df_cluster)
+                
+                # Apply K-Means clustering
+                kmeans = KMeans(n_clusters=3, random_state=42)
+                cluster_labels = kmeans.fit_predict(df_cluster_scaled)
+                
+                # Add cluster labels to original data
+                merged['Cluster'] = cluster_labels
+                
+                # Apply PCA for visualization
+                pca = PCA(n_components=2)
+                df_pca = pca.fit_transform(df_cluster_scaled)
+                
+                # Create scatter plot
+                fig = px.scatter(x=df_pca[:, 0], y=df_pca[:, 1], color=cluster_labels,
+                                 title=f'Clustering Results (PCA Visualization)',
+                                 labels={'x': f'PC1 ({pca.explained_variance_ratio_[0]:.2%} variance)', 
+                                         'y': f'PC2 ({pca.explained_variance_ratio_[1]:.2%} variance)'},
+                                 color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'],
+                                 hover_data=[merged.index])
+                fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                                  plot_bgcolor='rgba(0,0,0,0)',
+                                  font=dict(color="white"),
+                                  title_font=dict(color="#FFD700", size=20))
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Show cluster statistics in premium cards
+                st.markdown("### 📊 Cluster Statistics")
+                cluster_counts = pd.Series(cluster_labels).value_counts().sort_index()
+                cols = st.columns(len(cluster_counts))
+                for i, (cluster_id, count) in enumerate(cluster_counts.items()):
+                    with cols[i]:
+                        st.markdown(f"""
+                        <div class="custom-card" style="text-align: center;">
+                            <h4 style="color: #FFD700; margin-bottom: 10px;">Cluster {cluster_id}</h4>
+                            <p style="font-size: 1.8em; font-weight: bold; color: #FFFFFF; margin: 0;">{count}</p>
+                            <p style="color: #aaaaaa; margin: 5px 0 0 0;">samples</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Show detailed cluster statistics
+                st.markdown("### 📈 Detailed Cluster Analysis")
+                agg_dict = {}
+                for col in df_cluster.columns[:5]:  # Show first 5 numeric columns
+                    agg_dict[col] = ['mean', 'std']
+                cluster_stats = merged.groupby('Cluster').agg(agg_dict).round(3).copy()
+                st.dataframe(cluster_stats, width='stretch')
             
         except Exception as e:
             st.warning(f"Clustering analysis failed: {str(e)}")
@@ -1050,85 +1054,84 @@ with tab3:
         st.info("Please select 'Clustering Analysis' in the sidebar to enable this feature.")
     
     # Add Feature Importance Analysis if selected
-    if show_feature_importance and label_columns:
-        st.markdown("### 🎯 Feature Importance Analysis")
-        st.markdown("""
-        <div class="custom-card" style="margin-bottom: 25px;">
-            <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
-            <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        try:
-            # Prepare data
-            df_fi = merged.copy()
+    with ai_tabs[2]:
+        if show_feature_importance and label_columns:
+            st.markdown("""
+            <div class="custom-card" style="margin-bottom: 25px;">
+                <h3 style="color: #FFD700; margin-top: 0; font-size: 1.8em;">🎯 Feature Importance Analysis</h3>
+                <p style="font-size: 1.1em;">Advanced statistical methods to determine which features most influence outcomes.</p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Encode categorical variables
-            for col in df_fi.select_dtypes(include=['object']).columns:
-                le = LabelEncoder()
-                df_fi[col] = le.fit_transform(df_fi[col].astype(str))
-            
-            # Select target column
-            target_col = label_columns[0]
-            
-            if target_col in df_fi.columns:
-                # Calculate correlation-based feature importance
-                correlations = []
-                for col in df_fi.columns:
-                    if col != target_col:
-                        try:
-                            # Calculate correlation with error handling
-                            corr_val = abs(np.corrcoef(df_fi[col], df_fi[target_col])[0, 1])
-                            if not np.isnan(corr_val):
-                                correlations.append((col, corr_val))
-                        except:
-                            pass  # Skip columns that can't be correlated
+            try:
+                # Prepare data
+                df_fi = merged.copy()
                 
-                # Sort by correlation
-                correlations.sort(key=lambda x: x[1], reverse=True)
+                # Encode categorical variables
+                for col in df_fi.select_dtypes(include=['object']).columns:
+                    le = LabelEncoder()
+                    df_fi[col] = le.fit_transform(df_fi[col].astype(str))
                 
-                # Create DataFrame
-                corr_data = {"Feature": [item[0] for item in correlations[:15]], 
-                             "Correlation": [item[1] for item in correlations[:15]]}
-                corr_df = pd.DataFrame(corr_data).copy()
+                # Select target column
+                target_col = label_columns[0]
                 
-                # Plot with enhanced styling
-                fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
-                             title='Top 15 Features by Correlation with Target',
-                             color='Correlation',
-                             color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
-                fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
-                                  plot_bgcolor='rgba(0,0,0,0)',
-                                  font=dict(color="white"),
-                                  title_font=dict(color="#FFD700", size=20))
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # Show correlation statistics
-                if len(correlations) > 0:
-                    max_corr = max([corr[1] for corr in correlations])
-                    avg_corr = np.mean([corr[1] for corr in correlations])
+                if target_col in df_fi.columns:
+                    # Calculate correlation-based feature importance
+                    correlations = []
+                    for col in df_fi.columns:
+                        if col != target_col:
+                            try:
+                                # Calculate correlation with error handling
+                                corr_val = abs(np.corrcoef(df_fi[col], df_fi[target_col])[0, 1])
+                                if not np.isnan(corr_val):
+                                    correlations.append((col, corr_val))
+                            except:
+                                pass  # Skip columns that can't be correlated
                     
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown(f"""
-                        <div class="custom-card" style="text-align: center;">
-                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
-                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    with col2:
-                        st.markdown(f"""
-                        <div class="custom-card" style="text-align: center;">
-                            <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
-                            <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                
-        except Exception as e:
-            st.warning(f"Feature importance analysis failed: {str(e)}")
-    else:
-        st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
-
+                    # Sort by correlation
+                    correlations.sort(key=lambda x: x[1], reverse=True)
+                    
+                    # Create DataFrame
+                    corr_data = {"Feature": [item[0] for item in correlations[:15]],
+                                 "Correlation": [item[1] for item in correlations[:15]]}
+                    corr_df = pd.DataFrame(corr_data).copy()
+                    
+                    # Plot with enhanced styling
+                    fig = px.bar(corr_df, x='Correlation', y='Feature', orientation='h',
+                                 title='Top 15 Features by Correlation with Target',
+                                 color='Correlation',
+                                 color_continuous_scale=['#FFD700', '#FF8C00', '#FF4500'])
+                    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
+                                      plot_bgcolor='rgba(0,0,0,0)',
+                                      font=dict(color="white"),
+                                      title_font=dict(color="#FFD700", size=20))
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Show correlation statistics
+                    if len(correlations) > 0:
+                        max_corr = max([corr[1] for corr in correlations])
+                        avg_corr = np.mean([corr[1] for corr in correlations])
+                        
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.markdown(f"""
+                            <div class="custom-card" style="text-align: center;">
+                                <h4 style="color: #FFFFFF; margin-bottom: 10px;">🏆 Highest Correlation</h4>
+                                <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #81C784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{max_corr:.3f}</p>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        with col2:
+                            st.markdown(f"""
+                            <div class="custom-card" style="text-align: center;">
+                                <h4 style="color: #FFFFFF; margin-bottom: 10px;">📊 Average Correlation</h4>
+                                <p style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #2196F3, #64B5F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">{avg_corr:.3f}</p>
+                            </div>
+                            """, unsafe_allow_html=True)
+            except Exception as e:
+                st.warning(f"Feature importance analysis failed: {str(e)}")
+        else:
+            st.info("Please select 'Feature Importance' in the sidebar and ensure your dataset has label columns.")
+else:
     # Enhanced info when no AI features are selected
     st.markdown("""
     <div class="custom-card" style="text-align: center; padding: 40px;">
