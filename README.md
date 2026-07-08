@@ -36,3 +36,4 @@ This is a general-purpose auto-EDA tool — it works on any tabular dataset (sal
 
 ## Tech stack
 Python · Pandas · NumPy · Plotly · Streamlit
+"# NeuroInsights" 
