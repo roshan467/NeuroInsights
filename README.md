@@ -1,4 +1,4 @@
-# NeuroInsights — Automated Data Profiling & Visualization Engine
+# NeuroInsights — Automated Data Profiling & Visualization Engine - https://bit.ly/4vM1lx4
 
 Upload any CSV and get instant, automated data profiling, auto-selected visualizations, and plain-English insights — the core logic behind tools like pandas-profiling/Sweetviz, built from scratch to understand every step.
 
@@ -21,12 +21,6 @@ NeuroInsights/
 │   └── test_profiler.py      # 9 tests, all passing
 ```
 
-## How to run
-```bash
-pip install -r requirements.txt
-streamlit run src/app.py
-# Upload any CSV, or check "use a sample dataset" to try it immediately
-```
 
 ## What makes the insights trustworthy
 Unlike an LLM-generated summary, every insight here traces back to a specific, deterministic calculation (skewness formula, IQR bounds, correlation coefficient) — there's no hallucination risk on the facts. This is a deliberate design choice: **data profiling should never invent findings**, only surface real statistical properties.
